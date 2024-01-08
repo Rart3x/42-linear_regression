@@ -1,5 +1,4 @@
 import pandas, sys
-from estimated_price import call, ret_estimate_price
 
 mileage = int(sys.argv[1])
 data = pandas.read_csv("data.csv")

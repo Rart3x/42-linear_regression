@@ -29,9 +29,6 @@ def print_prices(y):
     for i in range(len(y)):
         print(str(y[i][0]) + " €")
 
-def ret_estimate_price(mileage):
-    return theta0 + (theta1 * mileage)
-
 if len(sys.argv) != 2 or not sys.argv[1].isdigit():
     print("\033[91musage: python3 estimated_price.py mileage\033[0m")
     exit()
@@ -45,7 +42,7 @@ y = data['price'].values.reshape(-1,1)
 x_avg = sum(x) / len(x)
 y_avg = sum(y) / len(y)
 
-theta0 = 0 # Coefficient d'theta0ion (θ0)
+theta0 = 0 # Coefficient d'interception (θ0)
 theta1 = 0 # Coefficient de pente (θ1)
 
 theta1 = calculate_theta1(x, y)
