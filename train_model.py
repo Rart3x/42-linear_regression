@@ -76,7 +76,7 @@ mileage_normalized = (mileage - x_min) / (x_max - x_min)
 theta1 = np.sum((x_normalized - np.mean(x_normalized)) * (y - np.mean(y))) / np.sum((x_normalized - np.mean(x_normalized)) ** 2)
 theta0 = np.mean(y) - (theta1 * np.mean(x_normalized))
 
-iterations = 100     # Number of iterations for gradient descent
+iterations = 10000     # Number of iterations for gradient descent
 learning_rate = 0.1  # Learning rate for gradient descent
 
 # Gradient descent to optimize theta0 and theta1
@@ -85,11 +85,11 @@ theta0, theta1 = gradient_descent(x_normalized, y, theta0, theta1, learning_rate
 # Calculate predicted values with the model for all 'x' values
 y_pred = estimate_price(mileage, x_normalized, theta0, theta1)
 
-# Calculate R-squared
+# Calculate R-squared (coefficient of determination) with the model
 ss_residual = np.sum((y - y_pred)**2)
 ss_total = np.sum((y - np.mean(y))**2)
 r_squared = 1 - (ss_residual / ss_total)
-print(f"Accuracy: {r_squared * 100} %")
+print(f"R-squared: {r_squared * 100} %")
 
 # Plot the linear regression line
 plot_scatter_and_regression(x, y, y_pred)
