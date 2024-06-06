@@ -17,7 +17,10 @@ def estimate_price(mileage, theta0, theta1):
 
     estimated_price = theta0 + (theta1 * mileage)
     estimated_price = round(estimated_price, 2)
-    print(f"EstimatedPrice for {mileage} km: {estimated_price} $")
+    print(
+        f"EstimatedPrice for a car with "
+        f"{mileage} km mileage: {estimated_price} $"
+    )
 
 
 def error_f(string: str):
@@ -40,7 +43,10 @@ def main() -> int:
     mileage = int(sys.argv[1])
 
     # Read data from the CSV file
-    data = pd.read_csv("data.csv")
+    try:
+        data = pd.read_csv("data.csv")
+    except:
+        error_f("error: cannot access to file")
 
     # Check if the data is empty
     if data.empty:
@@ -49,6 +55,9 @@ def main() -> int:
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data['km'].values.reshape(-1, 1)
     y = data['price'].values.reshape(-1, 1)
+
+    if len(x) == 0 or len(y) == 0:
+        error_f("error: km and price columns can't be empty")
 
     # Calculate average values for 'km' and 'price'
     x_avg = np.mean(x)
