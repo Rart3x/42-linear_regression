@@ -4,25 +4,17 @@ import pandas as pd
 import sys
 
 
-def estimate_price(mileage, mileage_normalized, theta0, theta1):
-    '''Function to estimate the price for a given mileage'''
+def custom_train_test_split(x, y, test_size):
+    '''Custom train_test_split method from sklearn lib'''
 
-    estimated_price = theta0 + (theta1 * mileage_normalized)
-    print(f"EstimatedPrice for {mileage} km: {estimated_price} $")
-    return estimated_price
-
-
-def gradient_descent(x, y, theta0, theta1, learning_rate, iterations):
-    '''Gradient descent algorithm to update theta0 and theta1'''
-
-    for _ in range(iterations):
-        predictions = theta0 + theta1 * x
-        error = predictions - y
-
-        theta1 -= learning_rate * (1 / len(x)) * np.dot(x.T, error)
-        theta0 -= learning_rate * (1 / len(x)) * np.sum(error)
+    indices = np.arange(x.shape[0])
+    np.random.shuffle(indices)
     
-    return theta0, theta1
+    split_index = int((1 - test_size) * len(x))
+    x_train, x_test = x[indices[:split_index]], x[indices[split_index:]]
+    y_train, y_test = y[indices[:split_index]], y[indices[split_index:]]
+
+    return x_train, x_test, y_train, y_test
 
 
 def plot_scatter_and_regression(x, y, y_pred):
@@ -62,54 +54,30 @@ def main() -> int:
     mileage = int(sys.argv[1])
 
     # Read data from the CSV file
-    data = pd.read_csv("data.csv")
+    try:
+        data = pd.read_csv("data.csv")
+    except:
+        error_f("error: cannot access to file")
 
     # Check if the data is empty
     if data.empty:
         error_f("error: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
-    x = data['km'].values.reshape(-1, 1)
-    y = data['price'].values.reshape(-1, 1)
+    x = data.iloc[:,:-1].values
+    y = data.iloc[:,-1].values
 
     # Check for NaN or Inf values in x and y
-    if np.any(np.isnan(x)) or np.any(np.isnan(y)):
-        error_f("error: x or y contains NaN values.")
+    if len(x) == 0 or len(y) == 0:
+        error_f("error: km and price columns can't be empty")
+
+    if (np.isnan(x).any() or np.isnan(y).any()):
+        error_f("error: invalid value in km or price column")
+
     if np.any(np.isinf(x)) or np.any(np.isinf(y)):
         error_f("error: x or y contains Inf values.")
 
-    # Calculate average values for 'km' and 'price'
-    x_avg = np.mean(x)
-    y_avg = np.mean(y)
-
-    x_max = np.max(x)
-    x_min = np.min(x)
-
-    x_normalized = (x - x_min) / (x_max - x_min)
-    mileage_normalized = (mileage - x_min) / (x_max - x_min)
-
-    # Initialize theta1 and theta0 using linear regression equations
-    theta1 = np.sum((x_normalized - np.mean(x_normalized)) * (y - np.mean(y))) / np.sum((x_normalized - np.mean(x_normalized)) ** 2)
-    theta0 = np.mean(y) - (theta1 * np.mean(x_normalized))
-
-    iterations = 10000   # Number of iterations for gradient descent
-    learning_rate = 0.1  # Learning rate for gradient descent
-
-    # Gradient descent to optimize theta0 and theta1
-    theta0, theta1 = gradient_descent(x_normalized, y, theta0, theta1, learning_rate, iterations)
-
-    # Calculate predicted values with the model for all 'x' values
-    y_pred = estimate_price(mileage, x_normalized, theta0, theta1)
-
-    # Calculate R-squared (coefficient of determination) with the model
-    ss_residual = np.sum((y - y_pred) ** 2)
-    ss_total = np.sum((y - np.mean(y)) ** 2)
-    r_squared = 1 - (ss_residual / ss_total)
-
-    print(f"R-squared (accuracy): {r_squared * 100} %")
-
-    # Plot the linear regression line
-    plot_scatter_and_regression(x, y, y_pred)
+    x_train, x_test, y_train, y_test = custom_train_test_split(x, y, test_size=1.0/3)
 
     return 0
 

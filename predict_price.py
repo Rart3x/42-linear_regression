@@ -59,6 +59,9 @@ def main() -> int:
     if len(x) == 0 or len(y) == 0:
         error_f("error: km and price columns can't be empty")
 
+    if (np.isnan(x).any() or np.isnan(y).any()):
+        error_f("error: invalid value in km or price column")
+
     # Calculate average values for 'km' and 'price'
     x_avg = np.mean(x)
     y_avg = np.mean(y)
