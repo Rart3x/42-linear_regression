@@ -8,6 +8,7 @@ def create_theta_csv(t0, t1):
     '''Create theta CSV method'''
 
     with open("theta.csv", "w") as file:
+        file.write("theta0, theta1")
         file.write(f"{t0},{t1}")
 
 def error_f(string: str):
