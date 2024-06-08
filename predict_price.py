@@ -62,16 +62,6 @@ def main() -> int:
     if (np.isnan(x).any() or np.isnan(y).any()):
         error_f("error: invalid value in km or price column")
 
-    # Calculate average values for 'km' and 'price'
-    x_avg = np.mean(x)
-    y_avg = np.mean(y)
-
-    # Initialize theta1 and theta0 using linear regression equations
-    theta1 = np.sum((x - x_avg) * (y - y_avg)) / np.sum((x - x_avg) ** 2)
-    theta0 = y_avg - (theta1 * x_avg)
-
-    # Estimate the price for the provided mileage using the trained model
-    estimate_price(mileage, theta0, theta1)
 
     return 0
 

@@ -4,17 +4,38 @@ import pandas as pd
 import sys
 
 
-def custom_train_test_split(x, y, test_size):
-    '''Custom train_test_split method from sklearn lib'''
+def create_theta_csv(t0, t1):
+    '''Create theta CSV method'''
 
-    indices = np.arange(x.shape[0])
-    np.random.shuffle(indices)
-    
-    split_index = int((1 - test_size) * len(x))
-    x_train, x_test = x[indices[:split_index]], x[indices[split_index:]]
-    y_train, y_test = y[indices[:split_index]], y[indices[split_index:]]
+    with open("theta.csv", "w") as file:
+        file.write(f"{t0},{t1}")
 
-    return x_train, x_test, y_train, y_test
+def error_f(string: str):
+    '''Error function'''
+
+    print(f"\033[91m{string}\033[0m")
+    exit(1)
+
+
+def gradient_descent(t0, t1, data, L):
+    '''Gradient descent method'''
+
+    t0_gradient = 0
+    t1_gradient = 0
+
+    n = len(data)
+
+    for i in range(n):
+        x = data.iloc[i].km
+        y = data.iloc[i].price
+
+        t0_gradient += -(2 / n) * x * (y - (t0 * x + t1))
+        t1_gradient += -(2 / n) * (y - (t0 * x + t1))
+
+    new_t0 = t0 - t0_gradient * L
+    new_t1 = t1 - t1_gradient * L
+
+    return new_t0, new_t1
 
 
 def plot_scatter_and_regression(x, y, y_pred):
@@ -34,13 +55,6 @@ def plot_scatter_and_regression(x, y, y_pred):
 
     # Display the plot
     plt.show()
-
-
-def error_f(string: str):
-    '''Error function'''
-
-    print(f"\033[91m{string}\033[0m")
-    exit(1)
 
 
 def main() -> int:
@@ -77,7 +91,19 @@ def main() -> int:
     if np.any(np.isinf(x)) or np.any(np.isinf(y)):
         error_f("error: x or y contains Inf values.")
 
-    x_train, x_test, y_train, y_test = custom_train_test_split(x, y, test_size=1.0/3)
+    t0, t1 = 0, 0
+    learning_rate = 0.001
+    iterations = 100
+
+    for i in range(iterations):
+        t0, t1 = gradient_descent(t0, t1, data, learning_rate)
+
+    # Create theta CSV
+    create_theta_csv(t0, t1)
+
+    y_pred = t0 * x + t1
+
+    plot_scatter_and_regression(x, y, y_pred)
 
     return 0
 
