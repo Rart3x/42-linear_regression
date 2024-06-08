@@ -3,15 +3,6 @@ import pandas as pd
 import sys
 
 
-def calculate_cost(x, y, theta0, theta1):
-    '''Function to calculate the cost (avg squared error)'''
-
-    predictions = theta0 + theta1 * x
-    error = predictions - y
-    cost = np.sum(error ** 2) / (2 * len(x))
-    return cost
-
-
 def estimate_price(mileage, theta0, theta1):
     '''Function to estimate the price for a given mileage'''
 
@@ -30,10 +21,22 @@ def error_f(string: str):
     exit(1)
 
 
+def get_thetas():
+    '''Get thetas method'''
+
+    try:
+        thetas = pd.read_csv("theta.csv")
+        theta0 = thetas["theta0"].values[0]
+        theta1 = thetas["theta1"].values[0]
+    except :
+        theta0, theta1 = 0, 0
+
+    return theta0, theta1
+
 def main() -> int:
     '''Main function'''
 
-    theta0, theta1 = 0, 0
+    theta0, theta1 = get_thetas()
 
     # Check if the correct number of command-line arguments is provided
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
@@ -46,7 +49,7 @@ def main() -> int:
     try:
         data = pd.read_csv("data.csv")
     except:
-        error_f("error: cannot access to file")
+        error_f("error: cannot access to datas file")
 
     # Check if the data is empty
     if data.empty:
@@ -62,6 +65,16 @@ def main() -> int:
     if (np.isnan(x).any() or np.isnan(y).any()):
         error_f("error: invalid value in km or price column")
 
+    if theta0 == 0 and theta1 == 0:
+        '''In case of None thetas, assigned thetas value from linear regression formula'''
+
+        x_avg = np.mean(x)
+        y_avg = np.mean(y)
+
+        theta1 = np.sum((x - x_avg) * (y - y_avg)) / np.sum((x - x_avg) ** 2)
+        theta0 = y_avg - (theta1 * x_avg)
+
+    estimate_price(mileage, theta0, theta1)
 
     return 0
 

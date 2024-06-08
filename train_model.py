@@ -8,7 +8,7 @@ def create_theta_csv(t0, t1):
     '''Create theta CSV method'''
 
     with open("theta.csv", "w") as file:
-        file.write("theta0, theta1")
+        file.write("theta0, theta1\n")
         file.write(f"{t0},{t1}")
 
 def error_f(string: str):
@@ -60,13 +60,6 @@ def plot_scatter_and_regression(x, y, y_pred):
 
 def main() -> int:
     '''Main function'''
-
-    # Check if the correct number of command-line arguments is provided
-    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
-        error_f("usage: python3 estimated_price.py mileage")
-
-    # Get the mileage from command-line argument
-    mileage = int(sys.argv[1])
 
     # Read data from the CSV file
     try:
