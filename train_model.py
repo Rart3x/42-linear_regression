@@ -4,6 +4,20 @@ import pandas as pd
 import sys
 
 
+def calculate_r2(y_true, y_pred):
+    '''Calculate R^2'''
+    
+    # Calculate residuals
+    residuals = y_true - y_pred
+    
+    # Calculate R^2
+    ss_res = np.sum(residuals ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) **2)
+    r2 = 1 - (ss_res / ss_tot)
+    
+    return r2
+
+
 def create_theta_csv(t0, t1):
     '''Create theta CSV method'''
 
@@ -11,8 +25,9 @@ def create_theta_csv(t0, t1):
         file.write("theta0, theta1\n")
         file.write(f"{t0},{t1}")
 
+
 def error_f(string: str):
-    '''Error function'''
+    '''Error method'''
 
     print(f"\033[91m{string}\033[0m")
     exit(1)
@@ -21,26 +36,20 @@ def error_f(string: str):
 def gradient_descent(t0, t1, data, L):
     '''Gradient descent method'''
 
-    t0_gradient = 0
-    t1_gradient = 0
+    x = data['km_n']
+    y = data['price_n']
 
-    n = len(data)
+    predictions = t0 + t1 * x
+    error = predictions - y
 
-    for i in range(n):
-        x = data.iloc[i].km
-        y = data.iloc[i].price
+    t1 -= L * (1 / len(x)) * np.dot(x.T, error)
+    t0 -= L * (1 / len(x)) * np.sum(error)
 
-        t0_gradient += -(2 / n) * x * (y - (t0 * x + t1))
-        t1_gradient += -(2 / n) * (y - (t0 * x + t1))
-
-    new_t0 = t0 - t0_gradient * L
-    new_t1 = t1 - t1_gradient * L
-
-    return new_t0, new_t1
+    return t0, t1
 
 
 def plot_scatter_and_regression(x, y, y_pred):
-    '''Scatter plot draw function'''
+    '''Scatter plot draw method'''
 
     # Create a scatter plot for the data points
     plt.scatter(x, y, color='blue', label='Data points')
@@ -59,7 +68,7 @@ def plot_scatter_and_regression(x, y, y_pred):
 
 
 def main() -> int:
-    '''Main function'''
+    '''Main method'''
 
     # Read data from the CSV file
     try:
@@ -85,17 +94,39 @@ def main() -> int:
     if np.any(np.isinf(x)) or np.any(np.isinf(y)):
         error_f("error: x or y contains Inf values.")
 
+    #Normalize x and y columns
+    x_normalized = (x - np.min(x)) / (np.max(x)- np.min(x))
+    data["km_n"] = x_normalized
+    y_normalized = (y - np.min(y)) / (np.max(y)- np.min(y))
+    data["price_n"] = y_normalized
+
     t0, t1 = 0, 0
-    learning_rate = 0.001
-    iterations = 100
+    learning_rate = 0.1
+    iterations = 1000
 
     for i in range(iterations):
         t0, t1 = gradient_descent(t0, t1, data, learning_rate)
 
+    # Calculate R^2, MSE, and MAE
+    y_true_normalized = data["price_n"]
+    y_pred_normalized = (t0 + t1 * data["km_n"])
+
+    # Calcul du R^2 avec les données normalisées
+    r2_normalized = calculate_r2(y_true_normalized, y_pred_normalized)
+    r2_percentage = r2_normalized * 100
+    print(f'R^2 (accuracy) : {r2_percentage:.2f}%')
+
+    #Denormalized thetas
+    t0 = t0 * (np.max(y) - np.min(y)) + np.min(y)
+    t1 = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+
     # Create theta CSV
     create_theta_csv(t0, t1)
+    
+    #Stock predictions vlues
+    y_pred = t0 + (t1 * x)
 
-    y_pred = t0 * x + t1
+
 
     plot_scatter_and_regression(x, y, y_pred)
 
