@@ -28,10 +28,11 @@ def get_thetas():
         thetas = pd.read_csv("theta.csv")
         theta0 = thetas["theta0"].values[0]
         theta1 = thetas["theta1"].values[0]
-    except :
+    except:
         theta0, theta1 = 0, 0
 
     return theta0, theta1
+
 
 def main() -> int:
     '''Main function'''
@@ -66,7 +67,9 @@ def main() -> int:
         error_f("error: invalid value in km or price column")
 
     if theta0 == 0 and theta1 == 0:
-        '''In case of None thetas, assigned thetas value from linear regression formula'''
+        '''In case of None thetas, assigned thetas
+        value from linear regression formula
+        '''
 
         x_avg = np.mean(x)
         y_avg = np.mean(y)

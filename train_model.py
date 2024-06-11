@@ -1,20 +1,31 @@
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider
 import numpy as np
 import pandas as pd
-import sys
+
+
+def accuracy(data, t0, t1):
+    '''Calculate R^2, MSE, and MAE'''
+
+    y_true_normalized = data["price_n"]
+    y_pred_normalized = (t0 + t1 * data["km_n"])
+
+    r2_normalized = calculate_r2(y_true_normalized, y_pred_normalized)
+    r2_percentage = r2_normalized * 100
+    print(f'R^2 (accuracy) : {r2_percentage:.2f}%')
 
 
 def calculate_r2(y_true, y_pred):
     '''Calculate R^2'''
-    
+
     # Calculate residuals
     residuals = y_true - y_pred
-    
+
     # Calculate R^2
     ss_res = np.sum(residuals ** 2)
-    ss_tot = np.sum((y_true - np.mean(y_true)) **2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
     r2 = 1 - (ss_res / ss_tot)
-    
+
     return r2
 
 
@@ -48,22 +59,41 @@ def gradient_descent(t0, t1, data, L):
     return t0, t1
 
 
-def plot_scatter_and_regression(x, y, y_pred):
-    '''Scatter plot draw method'''
+def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
+    '''Plot scatter and regression'''
 
-    # Create a scatter plot for the data points
-    plt.scatter(x, y, color='blue', label='Data points')
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.25)
 
-    # Plot the linear regression line
-    plt.plot(x, y_pred, color='red', linewidth=1, label='Linear regression')
+    #Scatter all datas values from CSV
+    ax.scatter(x, y, color='red', label='Data points')
+    
+    ax.plot(x, predictions[-1], label=f'Iteration {len(predictions)}')
+    ax.legend()
+    accuracy(data, thetas0[-1], thetas1[-1])
 
-    # Add titles and axis labels
-    plt.title('Linear Regression')
-    plt.xlabel('Mileage')
-    plt.ylabel('Price')
-    plt.legend()
+    # Slider creation
+    axcolor = 'lightgoldenrodyellow'
+    ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
+    slider = Slider(ax_slider, 'Iteration', 0, len(predictions)-1, valinit=len(predictions)-1, valstep=1)
 
-    # Display the plot
+    def update(val):
+        '''Update cursor method'''
+
+        iteration_index = int(slider.val)
+        ax.clear()
+
+        ax.scatter(x, y, color='red', label='Data points')
+        ax.plot(x, predictions[iteration_index], label=f'Iteration {iteration_index+1}')
+        ax.legend()
+
+        fig.canvas.draw_idle()
+
+        accuracy(data, thetas0[iteration_index], thetas1[iteration_index])
+
+    # Call on changed method from Slider to update the PLOT
+    slider.on_changed(update)
+
     plt.show()
 
 
@@ -81,8 +111,8 @@ def main() -> int:
         error_f("error: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
-    x = data.iloc[:,:-1].values
-    y = data.iloc[:,-1].values
+    x = data.iloc[:, :-1].values
+    y = data.iloc[:, -1].values
 
     # Check for NaN or Inf values in x and y
     if len(x) == 0 or len(y) == 0:
@@ -95,40 +125,35 @@ def main() -> int:
         error_f("error: x or y contains Inf values.")
 
     #Normalize x and y columns
-    x_normalized = (x - np.min(x)) / (np.max(x)- np.min(x))
+    x_normalized = (x - np.min(x)) / (np.max(x) - np.min(x))
     data["km_n"] = x_normalized
-    y_normalized = (y - np.min(y)) / (np.max(y)- np.min(y))
+    y_normalized = (y - np.min(y)) / (np.max(y) - np.min(y))
     data["price_n"] = y_normalized
 
     t0, t1 = 0, 0
     learning_rate = 0.1
     iterations = 1000
+    predictions = []
+    thetas0, thetas1 = [], []
 
     for i in range(iterations):
         t0, t1 = gradient_descent(t0, t1, data, learning_rate)
 
-    # Calculate R^2, MSE, and MAE
-    y_true_normalized = data["price_n"]
-    y_pred_normalized = (t0 + t1 * data["km_n"])
+        #Denormalized thetas
+        t0_denormalized = t0 * (np.max(y) - np.min(y)) + np.min(y)
+        t1_denormalized = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
 
-    # Calcul du R^2 avec les données normalisées
-    r2_normalized = calculate_r2(y_true_normalized, y_pred_normalized)
-    r2_percentage = r2_normalized * 100
-    print(f'R^2 (accuracy) : {r2_percentage:.2f}%')
+        y_pred = t0_denormalized + (t1_denormalized * x)
 
-    #Denormalized thetas
-    t0 = t0 * (np.max(y) - np.min(y)) + np.min(y)
-    t1 = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+        predictions.append(y_pred)
+        thetas0.append(t0)
+        thetas1.append(t1)
 
     # Create theta CSV
     create_theta_csv(t0, t1)
-    
+
     #Stock predictions vlues
-    y_pred = t0 + (t1 * x)
-
-
-
-    plot_scatter_and_regression(x, y, y_pred)
+    plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1)
 
     return 0
 
