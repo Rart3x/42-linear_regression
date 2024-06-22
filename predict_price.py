@@ -24,19 +24,30 @@ def error_f(string: str):
 def get_thetas():
     '''Get thetas method'''
 
+    theta0, theta1 = 0, 0
+
     try:
         thetas = pd.read_csv("theta.csv")
-        theta0 = thetas["theta0"].values[0]
-        theta1 = thetas["theta1"].values[0]
-    except:
-        theta0, theta1 = 0, 0
+        
+        if 'theta0' in thetas.columns and 'theta1' in thetas.columns:
+            theta0 = thetas.iloc[0]['theta0']
+            theta1 = thetas.iloc[0]['theta1']
+        else:
+            raise KeyError("Any theta columns in theta.csv")
+
+    except FileNotFoundError:
+        print("Error: File not found")
+    except KeyError as e:
+        print(f"Error: {str(e)}")
+    except Exception as e:
+        print(f"Error: {e}")
 
     return theta0, theta1
 
 
 def main() -> int:
     '''Main function'''
-
+    
     theta0, theta1 = get_thetas()
 
     # Check if the correct number of command-line arguments is provided
@@ -62,20 +73,6 @@ def main() -> int:
 
     if len(x) == 0 or len(y) == 0:
         error_f("error: km and price columns can't be empty")
-
-    if (np.isnan(x).any() or np.isnan(y).any()):
-        error_f("error: invalid value in km or price column")
-
-    if theta0 == 0 and theta1 == 0:
-        '''In case of None thetas, assigned thetas
-        value from linear regression formula
-        '''
-
-        x_avg = np.mean(x)
-        y_avg = np.mean(y)
-
-        theta1 = np.sum((x - x_avg) * (y - y_avg)) / np.sum((x - x_avg) ** 2)
-        theta0 = y_avg - (theta1 * x_avg)
 
     estimate_price(mileage, theta0, theta1)
 

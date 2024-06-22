@@ -33,7 +33,7 @@ def create_theta_csv(t0, t1):
     '''Create theta CSV method'''
 
     with open("theta.csv", "w") as file:
-        file.write("theta0, theta1\n")
+        file.write("theta0,theta1\n")
         file.write(f"{t0},{t1}")
 
 
@@ -118,12 +118,6 @@ def main() -> int:
     if len(x) == 0 or len(y) == 0:
         error_f("error: km and price columns can't be empty")
 
-    if (np.isnan(x).any() or np.isnan(y).any()):
-        error_f("error: invalid value in km or price column")
-
-    if np.any(np.isinf(x)) or np.any(np.isinf(y)):
-        error_f("error: x or y contains Inf values.")
-
     #Normalize x and y columns
     x_normalized = (x - np.min(x)) / (np.max(x) - np.min(x))
     data["km_n"] = x_normalized
@@ -150,7 +144,7 @@ def main() -> int:
         thetas1.append(t1)
 
     # Create theta CSV
-    create_theta_csv(t0, t1)
+    create_theta_csv(t0_denormalized, t1_denormalized)
 
     #Stock predictions vlues
     plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1)
