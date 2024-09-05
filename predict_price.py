@@ -21,6 +21,12 @@ def error_f(string: str):
     exit(1)
 
 
+def error_f_without_exit(string: str):
+    '''Error function without exit'''
+
+    print(f"\033[91m{string}\033[0m")
+
+
 def get_thetas():
     '''Get thetas method'''
 
@@ -36,11 +42,14 @@ def get_thetas():
             raise KeyError("Any theta columns in theta.csv")
 
     except FileNotFoundError:
-        print("Error: File not found")
+        error_f_without_exit("Error: File not found")
     except KeyError as e:
-        print(f"Error: {str(e)}")
+        error_f_without_exit(f"Error: {str(e)}")
     except Exception as e:
-        print(f"Error: {e}")
+        error_f_without_exit(f"Error: {e}")
+
+    if theta0 == 0 and theta1 == 0:
+        print("\033[94mThetas will be set to 0\033[0m")
 
     return theta0, theta1
 
