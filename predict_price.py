@@ -29,10 +29,10 @@ def get_thetas():
 
     try:
         thetas = pd.read_csv("theta.csv")
-        
-        if 'theta0' in thetas.columns and 'theta1' in thetas.columns:
-            theta0 = thetas.iloc[0]['theta0']
-            theta1 = thetas.iloc[0]['theta1']
+
+        if "theta0" in thetas.columns and "theta1" in thetas.columns:
+            theta0 = thetas.iloc[0]["theta0"]
+            theta1 = thetas.iloc[0]["theta1"]
         else:
             raise KeyError("Any theta columns in theta.csv")
 
@@ -55,7 +55,7 @@ def main() -> int:
 
     # Check if the correct number of command-line arguments is provided
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
-        error_f("usage: python3 estimated_price.py mileage")
+        error_f("Usage: python3 predict_price.py mileage")
 
     # Get the mileage from command-line argument
     mileage = int(sys.argv[1])
@@ -71,8 +71,8 @@ def main() -> int:
         error_f("Error: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
-    x = data['km'].values.reshape(-1, 1)
-    y = data['price'].values.reshape(-1, 1)
+    x = data["km"].values.reshape(-1, 1)
+    y = data["price"].values.reshape(-1, 1)
 
     if len(x) == 0 or len(y) == 0:
         error_f("Error: km and price columns can't be empty")
@@ -82,5 +82,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
