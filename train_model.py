@@ -8,11 +8,11 @@ from matplotlib.widgets import Slider
 def accuracy(data, t0, t1):
     """Calculate R^2, MSE, and MAE"""
     y_true_normalized = data["price_n"]
-    y_pred_normalized = (t0 + t1 * data["km_n"])
+    y_pred_normalized = t0 + t1 * data["km_n"]
 
     r2_normalized = calculate_r2(y_true_normalized, y_pred_normalized)
     r2_percentage = r2_normalized * 100
-    print(f'R^2 (accuracy) : {r2_percentage:.2f}%')
+    print(f"R^2 (accuracy) : {r2_percentage:.2f}%")
 
 
 def calculate_r2(y_true, y_pred):
@@ -21,7 +21,7 @@ def calculate_r2(y_true, y_pred):
     residuals = y_true - y_pred
 
     # Calculate R^2
-    ss_res = np.sum(residuals ** 2)
+    ss_res = np.sum(residuals**2)
     ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
     r2 = 1 - (ss_res / ss_tot)
 
@@ -43,8 +43,8 @@ def error_f(string: str):
 
 def gradient_descent(t0, t1, data, L):
     """Gradient descent method"""
-    x = data['km_n']
-    y = data['price_n']
+    x = data["km_n"]
+    y = data["price_n"]
 
     predictions = t0 + t1 * x
     error = predictions - y
@@ -60,17 +60,24 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
 
-    #Scatter all datas values from CSV
-    ax.scatter(x, y, color='red', label='Data points')
-    
-    ax.plot(x, predictions[-1], label=f'Iteration {len(predictions)}')
+    # Scatter all datas values from CSV
+    ax.scatter(x, y, color="red", label="Data points")
+
+    ax.plot(x, predictions[-1], label=f"Iteration {len(predictions)}")
     ax.legend()
     accuracy(data, thetas0[-1], thetas1[-1])
 
     # Slider creation
-    axcolor = 'lightgoldenrodyellow'
+    axcolor = "lightgoldenrodyellow"
     ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
-    slider = Slider(ax_slider, 'Iteration', 0, len(predictions)-1, valinit=len(predictions)-1, valstep=1)
+    slider = Slider(
+        ax_slider,
+        "Iteration",
+        0,
+        len(predictions) - 1,
+        valinit=len(predictions) - 1,
+        valstep=1,
+    )
 
     def update(val):
         """Update cursor method"""
@@ -78,8 +85,12 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
         iteration_index = int(slider.val)
         ax.clear()
 
-        ax.scatter(x, y, color='red', label='Data points')
-        ax.plot(x, predictions[iteration_index], label=f'Iteration {iteration_index+1}')
+        ax.scatter(x, y, color="red", label="Data points")
+        ax.plot(
+            x,
+            predictions[iteration_index],
+            label=f"Iteration {iteration_index + 1}",
+        )
         ax.legend()
 
         fig.canvas.draw_idle()
@@ -112,7 +123,7 @@ def main() -> int:
     if len(x) == 0 or len(y) == 0:
         error_f("Error: km and price columns can't be empty")
 
-    #Normalize x and y columns
+    # Normalize x and y columns
     x_normalized = (x - np.min(x)) / (np.max(x) - np.min(x))
     data["km_n"] = x_normalized
     y_normalized = (y - np.min(y)) / (np.max(y) - np.min(y))
@@ -127,9 +138,11 @@ def main() -> int:
     for i in range(iterations):
         t0, t1 = gradient_descent(t0, t1, data, learning_rate)
 
-        #Denormalized thetas
+        # Denormalized thetas
         t0_denormalized = t0 * (np.max(y) - np.min(y)) + np.min(y)
-        t1_denormalized = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+        t1_denormalized = (
+            t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+        )
 
         y_pred = t0_denormalized + (t1_denormalized * x)
 
@@ -146,5 +159,5 @@ def main() -> int:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
