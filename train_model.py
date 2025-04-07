@@ -5,7 +5,7 @@ import pandas as pd
 
 
 def accuracy(data, t0, t1):
-    '''Calculate R^2, MSE, and MAE'''
+    """Calculate R^2, MSE, and MAE"""
 
     y_true_normalized = data["price_n"]
     y_pred_normalized = (t0 + t1 * data["km_n"])
@@ -16,7 +16,7 @@ def accuracy(data, t0, t1):
 
 
 def calculate_r2(y_true, y_pred):
-    '''Calculate R^2'''
+    """Calculate R^2"""
 
     # Calculate residuals
     residuals = y_true - y_pred
@@ -30,7 +30,7 @@ def calculate_r2(y_true, y_pred):
 
 
 def create_theta_csv(t0, t1):
-    '''Create theta CSV method'''
+    """Create theta CSV method"""
 
     with open("theta.csv", "w") as file:
         file.write("theta0,theta1\n")
@@ -38,14 +38,14 @@ def create_theta_csv(t0, t1):
 
 
 def error_f(string: str):
-    '''Error method'''
+    """Error method"""
 
     print(f"\033[91m{string}\033[0m")
     exit(1)
 
 
 def gradient_descent(t0, t1, data, L):
-    '''Gradient descent method'''
+    """Gradient descent method"""
 
     x = data['km_n']
     y = data['price_n']
@@ -60,7 +60,7 @@ def gradient_descent(t0, t1, data, L):
 
 
 def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
-    '''Plot scatter and regression'''
+    """Plot scatter and regression"""
 
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
@@ -78,7 +78,7 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
     slider = Slider(ax_slider, 'Iteration', 0, len(predictions)-1, valinit=len(predictions)-1, valstep=1)
 
     def update(val):
-        '''Update cursor method'''
+        """Update cursor method"""
 
         iteration_index = int(slider.val)
         ax.clear()
@@ -98,7 +98,7 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
 
 
 def main() -> int:
-    '''Main method'''
+    """Main method"""
 
     # Read data from the CSV file
     try:

@@ -4,7 +4,7 @@ import sys
 
 
 def estimate_price(mileage, theta0, theta1):
-    '''Function to estimate the price for a given mileage'''
+    """Function to estimate the price for a given mileage"""
 
     estimated_price = theta0 + (theta1 * mileage)
     estimated_price = round(estimated_price, 2)
@@ -15,20 +15,20 @@ def estimate_price(mileage, theta0, theta1):
 
 
 def error_f(string: str):
-    '''Error function'''
+    """Error function"""
 
     print(f"\033[91m{string}\033[0m")
     exit(1)
 
 
 def error_f_without_exit(string: str):
-    '''Error function without exit'''
+    """Error function without exit"""
 
     print(f"\033[91m{string}\033[0m")
 
 
 def get_thetas():
-    '''Get thetas method'''
+    """Get thetas method"""
 
     theta0, theta1 = 0, 0
 
@@ -55,7 +55,7 @@ def get_thetas():
 
 
 def main() -> int:
-    '''Main function'''
+    """Main function"""
     
     theta0, theta1 = get_thetas()
 
