@@ -5,7 +5,6 @@ import sys
 
 def estimate_price(mileage, theta0, theta1):
     """Function to estimate the price for a given mileage"""
-
     estimated_price = theta0 + (theta1 * mileage)
     estimated_price = round(estimated_price, 2)
     print(
@@ -16,20 +15,17 @@ def estimate_price(mileage, theta0, theta1):
 
 def error_f(string: str):
     """Error function"""
-
     print(f"\033[91m{string}\033[0m")
     exit(1)
 
 
 def error_f_without_exit(string: str):
     """Error function without exit"""
-
     print(f"\033[91m{string}\033[0m")
 
 
 def get_thetas():
     """Get thetas method"""
-
     theta0, theta1 = 0, 0
 
     try:
@@ -56,7 +52,6 @@ def get_thetas():
 
 def main() -> int:
     """Main function"""
-    
     theta0, theta1 = get_thetas()
 
     # Check if the correct number of command-line arguments is provided
