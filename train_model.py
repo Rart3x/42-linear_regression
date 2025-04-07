@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider
 import numpy as np
 import pandas as pd
+
+from matplotlib.widgets import Slider
 
 
 def accuracy(data, t0, t1):
