@@ -98,11 +98,11 @@ def main() -> int:
     try:
         data = pd.read_csv("data.csv")
     except:
-        error_f("error: cannot access to file")
+        error_f("Error: cannot access to file")
 
     # Check if the data is empty
     if data.empty:
-        error_f("error: data.csv is empty")
+        error_f("Error: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data.iloc[:, :-1].values
@@ -110,7 +110,7 @@ def main() -> int:
 
     # Check for NaN or Inf values in x and y
     if len(x) == 0 or len(y) == 0:
-        error_f("error: km and price columns can't be empty")
+        error_f("Error: km and price columns can't be empty")
 
     #Normalize x and y columns
     x_normalized = (x - np.min(x)) / (np.max(x) - np.min(x))
@@ -140,7 +140,7 @@ def main() -> int:
     # Create theta CSV
     create_theta_csv(t0_denormalized, t1_denormalized)
 
-    #Stock predictions vlues
+    # Stock predictions vues
     plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1)
 
     return 0

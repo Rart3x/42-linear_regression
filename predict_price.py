@@ -64,18 +64,18 @@ def main() -> int:
     try:
         data = pd.read_csv("data.csv")
     except:
-        error_f("error: cannot access to datas file")
+        error_f("Error: cannot access to datas file")
 
     # Check if the data is empty
     if data.empty:
-        error_f("error: data.csv is empty")
+        error_f("Error: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data['km'].values.reshape(-1, 1)
     y = data['price'].values.reshape(-1, 1)
 
     if len(x) == 0 or len(y) == 0:
-        error_f("error: km and price columns can't be empty")
+        error_f("Error: km and price columns can't be empty")
 
     estimate_price(mileage, theta0, theta1)
 
