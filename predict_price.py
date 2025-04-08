@@ -7,7 +7,9 @@ def estimate_price(mileage, theta0, theta1):
     estimated_price = theta0 + (theta1 * mileage)
     estimated_price = round(estimated_price, 2)
     print(
-        f"EstimatedPrice for a car with " f"{mileage} km mileage: {estimated_price} $"
+        f"EstimatedPrice for a car with "
+        f"{mileage}"
+        f" km mileage: {estimated_price} $"
     )
 
 
@@ -37,7 +39,8 @@ def get_thetas():
 
     except FileNotFoundError:
         print(
-            "\033[94mINFO : Theta file not found, by default they will be set to 0\033[0m"
+            "\033[94mINFO : Theta file not found,"
+            "by default they will be set to 0\033[0m"
         )
     except KeyError as e:
         error_f_without_exit(f"Error: {str(e)}")
@@ -66,8 +69,9 @@ def main() -> int:
     # Read data from the CSV file
     try:
         data = pd.read_csv("data.csv")
-    except:
+    except FileNotFoundError:
         error_f("Error: cannot access to datas CSV")
+        raise
 
     # Check if the data is empty
     if data.empty:

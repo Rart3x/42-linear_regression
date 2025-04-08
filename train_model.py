@@ -68,8 +68,8 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
     accuracy(data, thetas0[-1], thetas1[-1])
 
     # Slider creation
-    axcolor = "lightgoldenrodyellow"
-    ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
+    color = "lightgoldenrodyellow"
+    ax_slider = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=color)
     slider = Slider(
         ax_slider,
         "Iteration",
@@ -113,7 +113,9 @@ def check_data_validity(x, y):
     if x.size == 0 or y.size == 0:
         error_f("Error: x or y is empty")
 
-    if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(y.dtype, np.number):
+    if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(
+            y.dtype, np.number
+    ):
         error_f("Error: x or y contains non-numeric values")
 
     if np.isnan(x).any() or np.isnan(y).any():
@@ -123,10 +125,13 @@ def check_data_validity(x, y):
 def main() -> int:
     """Main method"""
     # Read data from the CSV file
+    data = pd.DataFrame()
+
     try:
         data = pd.read_csv("data.csv")
-    except:
+    except FileNotFoundError:
         error_f("Error: cannot access to CSV file")
+        raise
 
     # Check if the data is empty
     if data.empty:
@@ -148,10 +153,12 @@ def main() -> int:
     y_normalized = (y - np.min(y)) / (np.max(y) - np.min(y))
     data["price_n"] = y_normalized
 
-    t0, t1 = 0, 0
     learning_rate = 0.1
     iterations = 1000
     predictions = []
+
+    t0, t1 = 0, 0
+    t0_denormalized, t1_denormalized = 0, 0
     thetas0, thetas1 = [], []
 
     for i in range(iterations):
@@ -159,7 +166,9 @@ def main() -> int:
 
         # Denormalized thetas
         t0_denormalized = t0 * (np.max(y) - np.min(y)) + np.min(y)
-        t1_denormalized = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+        t1_denormalized = (
+                t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+        )
 
         y_pred = t0_denormalized + (t1_denormalized * x)
 
@@ -170,7 +179,7 @@ def main() -> int:
     # Create theta CSV
     create_theta_csv(t0_denormalized, t1_denormalized)
 
-    # Stock predictions vues
+    # Stock predictions views
     plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1)
 
     return 0
