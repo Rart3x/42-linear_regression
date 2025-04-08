@@ -21,7 +21,7 @@ def calculate_r2(y_true, y_pred):
     residuals = y_true - y_pred
 
     # Calculate R^2
-    ss_res = np.sum(residuals**2)
+    ss_res = np.sum(residuals ** 2)
     ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
     r2 = 1 - (ss_res / ss_tot)
 
@@ -103,13 +103,30 @@ def plot_scatter_and_regression(x, y, predictions, data, thetas0, thetas1):
     plt.show()
 
 
+def check_data_validity(x, y):
+    """
+    Check if x and y are valid NumPy arrays
+    """
+    if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
+        error_f("Error: x or y is not a NumPy array")
+
+    if x.size == 0 or y.size == 0:
+        error_f("Error: x or y is empty")
+
+    if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(y.dtype, np.number):
+        error_f("Error: x or y contains non-numeric values")
+
+    if np.isnan(x).any() or np.isnan(y).any():
+        error_f("Error: x or y contains NaN values")
+
+
 def main() -> int:
     """Main method"""
     # Read data from the CSV file
     try:
         data = pd.read_csv("data.csv")
     except:
-        error_f("Error: cannot access to file")
+        error_f("Error: cannot access to CSV file")
 
     # Check if the data is empty
     if data.empty:
@@ -118,6 +135,8 @@ def main() -> int:
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data.iloc[:, :-1].values
     y = data.iloc[:, -1].values
+
+    check_data_validity(x, y)
 
     # Check for NaN or Inf values in x and y
     if len(x) == 0 or len(y) == 0:
@@ -140,9 +159,7 @@ def main() -> int:
 
         # Denormalized thetas
         t0_denormalized = t0 * (np.max(y) - np.min(y)) + np.min(y)
-        t1_denormalized = (
-            t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
-        )
+        t1_denormalized = t1 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
 
         y_pred = t0_denormalized + (t1_denormalized * x)
 

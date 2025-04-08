@@ -54,16 +54,20 @@ def main() -> int:
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
         error_f("USAGE : python3 predict_price.py mileage")
 
+    # Get thetas from the CSV file
     theta0, theta1 = get_thetas()
 
     # Get the mileage from command-line argument
     mileage = int(sys.argv[1])
 
+    # Initialize the data DataFrame
+    data = pd.DataFrame()
+
     # Read data from the CSV file
     try:
         data = pd.read_csv("data.csv")
     except:
-        error_f("Error: cannot access to datas file")
+        error_f("Error: cannot access to datas CSV")
 
     # Check if the data is empty
     if data.empty:
