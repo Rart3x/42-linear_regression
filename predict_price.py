@@ -7,8 +7,7 @@ def estimate_price(mileage, theta0, theta1):
     estimated_price = theta0 + (theta1 * mileage)
     estimated_price = round(estimated_price, 2)
     print(
-        f"EstimatedPrice for a car with "
-        f"{mileage} km mileage: {estimated_price} $"
+        f"EstimatedPrice for a car with " f"{mileage} km mileage: {estimated_price} $"
     )
 
 
@@ -37,25 +36,25 @@ def get_thetas():
             raise KeyError("Any theta columns in theta.csv")
 
     except FileNotFoundError:
-        error_f_without_exit("Error: File not found")
+        print(
+            "\033[94mINFO : Theta file not found, by default they will be set to 0\033[0m"
+        )
     except KeyError as e:
         error_f_without_exit(f"Error: {str(e)}")
     except Exception as e:
         error_f_without_exit(f"Error: {e}")
-
-    if theta0 == 0 and theta1 == 0:
-        print("\033[94mThetas will be set to 0\033[0m")
 
     return theta0, theta1
 
 
 def main() -> int:
     """Main function"""
-    theta0, theta1 = get_thetas()
 
     # Check if the correct number of command-line arguments is provided
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
-        error_f("Usage: python3 predict_price.py mileage")
+        error_f("USAGE : python3 predict_price.py mileage")
+
+    theta0, theta1 = get_thetas()
 
     # Get the mileage from command-line argument
     mileage = int(sys.argv[1])
