@@ -40,7 +40,7 @@ def get_thetas():
     except FileNotFoundError:
         print(
             "\033[94mINFO: Theta file not found,"
-            "by default they will be set to 0\033[0m"
+            " by default they will be set to 0\033[0m"
         )
     except KeyError as e:
         error_f_without_exit(f"Error: {str(e)}")
@@ -76,7 +76,7 @@ def main() -> int:
         error_f("ERROR: datas CSV file is empty")
         raise
     except Exception as e:
-        error_f("ERROR: cannot access to datas CSV")
+        error_f(f"ERROR: {e}")
         raise
 
     # Check if the data is empty
