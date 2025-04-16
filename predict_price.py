@@ -1,5 +1,25 @@
+import numpy as np
 import pandas as pd
 import sys
+
+
+def check_data_validity(x, y):
+    """
+    Check if x and y are valid NumPy arrays
+    """
+    if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
+        error_f("ERROR: x or y is not a NumPy array")
+
+    if x.size == 0 or y.size == 0:
+        error_f("ERROR: x or y is empty")
+
+    if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(
+            y.dtype, np.number
+    ):
+        error_f("ERROR: x or y contains non-numeric values")
+
+    if np.isnan(x).any() or np.isnan(y).any():
+        error_f("ERROR: x or y contains NaN values")
 
 
 def estimate_price(mileage, theta0, theta1):
@@ -83,9 +103,7 @@ def main() -> int:
     x = data["km"].values.reshape(-1, 1)
     y = data["price"].values.reshape(-1, 1)
 
-    if len(x) == 0 or len(y) == 0:
-        error_f("ERROR: km and price columns can't be empty")
-
+    check_data_validity(x, y)
     estimate_price(mileage, theta0, theta1)
 
     return 0
