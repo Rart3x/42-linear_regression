@@ -39,7 +39,7 @@ def get_thetas():
 
     except FileNotFoundError:
         print(
-            "\033[94mINFO : Theta file not found,"
+            "\033[94mINFO: Theta file not found,"
             "by default they will be set to 0\033[0m"
         )
     except KeyError as e:
@@ -70,19 +70,25 @@ def main() -> int:
     try:
         data = pd.read_csv("data.csv")
     except FileNotFoundError:
-        error_f("Error: cannot access to datas CSV")
+        error_f("ERROR: cannot access to datas CSV")
+        raise
+    except pd.errors.EmptyDataError:
+        error_f("ERROR: datas CSV file is empty")
+        raise
+    except Exception as e:
+        error_f("ERROR: cannot access to datas CSV")
         raise
 
     # Check if the data is empty
     if data.empty:
-        error_f("Error: data.csv is empty")
+        error_f("ERROR: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data["km"].values.reshape(-1, 1)
     y = data["price"].values.reshape(-1, 1)
 
     if len(x) == 0 or len(y) == 0:
-        error_f("Error: km and price columns can't be empty")
+        error_f("ERROR: km and price columns can't be empty")
 
     estimate_price(mileage, theta0, theta1)
 

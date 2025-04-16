@@ -108,18 +108,18 @@ def check_data_validity(x, y):
     Check if x and y are valid NumPy arrays
     """
     if not isinstance(x, np.ndarray) or not isinstance(y, np.ndarray):
-        error_f("Error: x or y is not a NumPy array")
+        error_f("ERROR: x or y is not a NumPy array")
 
     if x.size == 0 or y.size == 0:
-        error_f("Error: x or y is empty")
+        error_f("ERROR: x or y is empty")
 
     if not np.issubdtype(x.dtype, np.number) or not np.issubdtype(
             y.dtype, np.number
     ):
-        error_f("Error: x or y contains non-numeric values")
+        error_f("ERROR: x or y contains non-numeric values")
 
     if np.isnan(x).any() or np.isnan(y).any():
-        error_f("Error: x or y contains NaN values")
+        error_f("ERROR: x or y contains NaN values")
 
 
 def main() -> int:
@@ -130,12 +130,18 @@ def main() -> int:
     try:
         data = pd.read_csv("data.csv")
     except FileNotFoundError:
-        error_f("Error: cannot access to CSV file")
+        error_f("ERROR: cannot access to CSV file")
+        raise
+    except pd.errors.EmptyDataError:
+        error_f("ERROR: CSV file is empty")
+        raise
+    except Exception as e:
+        error_f(f"ERROR: {e}")
         raise
 
     # Check if the data is empty
     if data.empty:
-        error_f("Error: data.csv is empty")
+        error_f("ERROR: data.csv is empty")
 
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data.iloc[:, :-1].values
@@ -145,7 +151,7 @@ def main() -> int:
 
     # Check for NaN or Inf values in x and y
     if len(x) == 0 or len(y) == 0:
-        error_f("Error: km and price columns can't be empty")
+        error_f("ERROR: km and price columns can't be empty")
 
     # Normalize x and y columns
     x_normalized = (x - np.min(x)) / (np.max(x) - np.min(x))
