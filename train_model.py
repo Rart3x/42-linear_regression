@@ -139,10 +139,6 @@ def main() -> int:
         error_f(f"ERROR: {e}")
         raise
 
-    # Check if the data is empty
-    if data.empty:
-        error_f("ERROR: data.csv is empty")
-
     # Extract 'km' and 'price' columns and convert to NumPy arrays
     x = data.iloc[:, :-1].values
     y = data.iloc[:, -1].values
